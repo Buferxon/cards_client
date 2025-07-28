@@ -20,6 +20,163 @@
     ],
     "paths": {
         "/api/v1": {},
+        "/api/v1/cards/{crd_intsnr}": {
+            "get": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Obtener información de una tarjeta por su número de serie interno",
+                "description": "Retorna la información de una tarjeta específica utilizando el número de serie interno (crd_intsnr).",
+                "operationId": "getCard",
+                "parameters": [
+                    {
+                        "name": "crd_intsnr",
+                        "in": "path",
+                        "description": "Número de serie interno de la tarjeta",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tarjeta obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tarjeta obtenida exitosamente"
+                                        },
+                                        "card_number": {
+                                            "type": "string",
+                                            "example": "19-6-05213930-4"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "iss_id": {
+                                                        "type": "string",
+                                                        "example": "19"
+                                                    },
+                                                    "cd_id": {
+                                                        "type": "string",
+                                                        "example": "6"
+                                                    },
+                                                    "crd_snr": {
+                                                        "type": "string",
+                                                        "example": "5213930"
+                                                    },
+                                                    "cty_id": {
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "dc_code": {
+                                                        "type": "string",
+                                                        "example": null,
+                                                        "nullable": true
+                                                    },
+                                                    "crd_chkdg": {
+                                                        "type": "string",
+                                                        "example": "4"
+                                                    },
+                                                    "crd_intsnr": {
+                                                        "type": "string",
+                                                        "example": "538327456"
+                                                    },
+                                                    "crd_certificate": {
+                                                        "type": "string",
+                                                        "example": "0"
+                                                    },
+                                                    "crd_status": {
+                                                        "type": "string",
+                                                        "example": "A"
+                                                    },
+                                                    "crd_regdate": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-08-23 09:18:07"
+                                                    },
+                                                    "crd_reguser": {
+                                                        "type": "string",
+                                                        "example": "PROCEDURE"
+                                                    },
+                                                    "crd_secondcopytax": {
+                                                        "type": "string",
+                                                        "example": "0"
+                                                    },
+                                                    "user_name": {
+                                                        "type": "string",
+                                                        "example": "ROBINSON BUENAVENTURA FERNANDEZ"
+                                                    },
+                                                    "user_document": {
+                                                        "type": "string",
+                                                        "example": "1006155540"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La tarjeta con el número de serie proporcionado no existe",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La tarjeta con el número de serie proporcionado no existe"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al obtener la tarjeta",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener la tarjeta"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensaje de error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
@@ -767,6 +924,10 @@
         {
             "name": "Users",
             "description": "Operaciones relacionadas con usuarios"
+        },
+        {
+            "name": "Cards",
+            "description": "Cards"
         }
     ]
 }

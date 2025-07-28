@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Card\CardController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +21,12 @@ Route::prefix('v1')->group(function () {
 
     // Rutas adicionales si las necesitas
     Route::get('users/search/{term}', [UserController::class, 'search'])->name('users.search');
+
+
+
+
+
+    //Consulta numero de tarjeta
+    Route::get('cards/{crd_intsnr}', [CardController::class, 'getCard'])
+        ->name('cards.get_number');
 });
