@@ -43,21 +43,4 @@ class Card extends Model
             ->where('CRD_SNR', $crdSnr)
             ->first();
     }
-
-    public static function createCard(array $data)
-    {
-        return self::create($data);
-    }
-
-    public function updateCard(array $data)
-    {
-        $this->fill($data);
-        $this->save();
-        return $this;
-    }
-
-    public function deleteCard()
-    {
-        return $this->delete();
-    }
 }

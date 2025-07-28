@@ -5,7 +5,7 @@ namespace App\Http\Requests\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
-
+use App\Rules\CheckCardExistence; // Importa tu regla
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
@@ -23,9 +23,12 @@ class StoreUserRequest extends FormRequest
             'document_number' => 'required|integer|unique:users,document_number',
             'email' => 'required|string|email|max:255|unique:users,email',
             'telephone' => 'required|integer',
+            'birth_date' => 'nullable|date',
+            'status' => 'nullable|boolean',
             'address' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'password_confirmation' => 'required_with:password|string|min:8',
+            'crd_intsnr' => ['required', new CheckCardExistence()], // Usando la regla personalizada
         ];
     }
 

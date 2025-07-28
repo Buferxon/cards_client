@@ -193,6 +193,15 @@
                                         "type": "string",
                                         "example": "Calle 123 #45-67"
                                     },
+                                    "birth_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1990-01-01"
+                                    },
+                                    "crd_intsnr": {
+                                        "type": "string",
+                                        "example": "A0:39:16:20"
+                                    },
                                     "password": {
                                         "type": "string",
                                         "format": "password",

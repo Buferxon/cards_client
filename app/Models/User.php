@@ -46,6 +46,9 @@ class User extends Authenticatable
         'gender_id',
         'document_type_id',
         'document_number',
+        'birth_date',
+        'status',
+        'address',
         'email',
         'telephone',
         'password',
@@ -72,6 +75,11 @@ class User extends Authenticatable
         'telephone' => 'integer',
         'gender_id' => 'integer',
         'document_type_id' => 'integer',
+        'birth_date' => 'date',
+        'status' => 'boolean',
+        'address' => 'string',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Card\CardController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
@@ -120,6 +121,8 @@ class UserController extends Controller
      *              @OA\Property(property="email", type="string", format="email", example="juan@ejemplo.com"),
      *              @OA\Property(property="telephone", type="integer", example=3001234567),
      *              @OA\Property(property="address", type="string", example="Calle 123 #45-67"),
+     *              @OA\Property(property="birth_date", type="string", format="date", example="1990-01-01"),
+     *              @OA\Property(property="crd_intsnr", type="string", example="A0:39:16:20"),
      *              @OA\Property(property="password", type="string", format="password", minLength=8, nullable=true, example="password123"),
      *              @OA\Property(
      *                  property="password_confirmation",
@@ -161,28 +164,11 @@ class UserController extends Controller
      *
      * Store a newly created user.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreUserRequest $request): JsonResponse
     {
         try {
-
-
-            // $data = $request->validated();
-
-            // $user = User::create([
-            //     // 'user_id' is auto-incremented, no need to set
-            //     'name' => $data['name'],
-            //     'last_name' => $data['last_name'],
-            //     'gender_id' => $data['gender_id'],
-            //     'document_type_id' => $data['document_type_id'],
-            //     'document_number' => $data['document_number'],
-            //     'email' => $data['email'],
-            //     'telephone' => $data['telephone'],
-            //     'address' => $data['address'] ?? null,
-            //     'password' => isset($data['password']) ? Hash::make($data['password']) : null,
-            // ]);
-
-
-            $serialHex = $request->get('serial_number');
+            $data = $request->validated();
+            $serialHex = $data['crd_intsnr'];
             $serialHex = str_replace(':', '', $serialHex); // Remove colons
             // Split hex string into pairs
             $hexPairs = str_split($serialHex, 2);
@@ -191,48 +177,78 @@ class UserController extends Controller
             // Join back to string
             $reversedHex = implode('', $reversedPairs);
             // Convert to integer
-            $serialInt = hexdec($reversedHex);
+            $crd_intsnr = hexdec($reversedHex);
 
-
-            $reg_card = DB::connection('oracle_mercury')->select("select c.ISS_ID,
-       c.CD_ID,
-       c.CRD_SNR,
-       c.CTY_ID,
-       c.CRD_CHKDG,
-       c.CRD_INTSNR,
-       c.CRD_CERTIFICATE,
-       c.CRD_STATUS,
-       c.CRD_REGDATE,
-       c.CRD_REGUSER,
-       c.CRD_SECONDCOPYTAX,
-       u.USR_NAME as user_name,
-       ud.USRDOC_NUMBER as user_document
-from MERCURY.CARDS c
-         left join MERCURY.CARDSXUSERS cu on c.ISS_ID = cu.ISS_ID and c.CD_ID = cu.CD_ID and c.CRD_SNR = cu.CRD_SNR
-         left join MERCURY.USERS u on cu.USR_ID = u.USR_ID and u.USR_STATUS='A'
-         left join MERCURY.USERDOCUMENTS ud on u.USR_ID = ud.USR_ID and ud.USRDOC_STATUS='A'
-where c.CRD_INTSNR = :CRD_INTSNR
-  and (ud.DT_ID in (87, 88, 83) or ud.DT_ID is null)", [
-                'CRD_INTSNR' => $serialInt
+            $user = User::create([
+                'name' => $data['name'],
+                'last_name' => $data['last_name'],
+                'gender_id' => $data['gender_id'],
+                'document_type_id' => $data['document_type_id'],
+                'document_number' => $data['document_number'],
+                'birth_date' => $data['birth_date'] ?? null,
+                'email' => $data['email'],
+                'telephone' => $data['telephone'],
+                'address' => $data['address'] ?? null,
+                'password' => isset($data['password']) ? Hash::make($data['password']) : null,
             ]);
 
-            $is_personalized = 0; // Default value
-            if (empty($reg_card)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tarjeta no encontrada',
-                ], 404);
-            } else {
-                foreach ($reg_card as $card) {
-                    if ($card->user_document == $request->get('document_number')) {
-                        $is_personalized = 1; // Card is personalized
-                    }
-                }
+
+            $reg_card = DB::connection('oracle_mercury')->select("
+                select c.ISS_ID,
+                       c.CD_ID,
+                       c.CRD_SNR,
+                       c.CTY_ID,
+                        c.DC_CODE,
+                       c.CRD_CHKDG,
+                       c.CRD_INTSNR,
+                       c.CRD_CERTIFICATE,
+                       c.CRD_STATUS,
+                       c.CRD_REGDATE,
+                       c.CRD_REGUSER,
+                       c.CRD_SECONDCOPYTAX,
+                       u.USR_NAME as user_name,
+                       ud.USRDOC_NUMBER as user_document
+                  from MERCURY.CARDS c
+                  left join MERCURY.CARDSXUSERS cu 
+                    on c.ISS_ID = cu.ISS_ID 
+                   and c.CD_ID = cu.CD_ID 
+                   and c.CRD_SNR = cu.CRD_SNR
+                  left join MERCURY.USERS u 
+                    on cu.USR_ID = u.USR_ID 
+                   and u.USR_STATUS='A'
+                  left join MERCURY.USERDOCUMENTS ud 
+                    on u.USR_ID = ud.USR_ID 
+                   and ud.USRDOC_STATUS='A'
+                 where c.CRD_INTSNR = :CRD_INTSNR
+                   and (ud.DT_ID in (87, 88, 83) or ud.DT_ID is null)
+            ", [
+                'CRD_INTSNR' => $crd_intsnr
+            ]);
+            $is_personalized = 0; // Card is personalized
+
+
+            if ($reg_card[0]->user_document == $data['document_number']) {
+                $is_personalized = 1; // Card is personalized
             }
 
 
-            dd($serialInt, $serialHex, $reversedHex, $reg_card, $is_personalized);
 
+
+            $reg_card[0]->user_id = $user->user_id;
+            $reg_card[0]->is_personalized = $is_personalized;
+
+
+            $card = new CardController();
+            $reg_card = $card->store($reg_card);
+
+            if (!$reg_card['success']) {
+                User::deleted($user->user_id);
+                return response()->json([
+                    'success' => false,
+                    'message' => $reg_card['message'],
+                    'error' => 'Card creation failed'
+                ], 500);
+            }
 
             return response()->json([
                 'success' => true,
@@ -240,6 +256,8 @@ where c.CRD_INTSNR = :CRD_INTSNR
                 'data' => 'hola'
             ], 201);
         } catch (\Exception $e) {
+            dd($e);
+            User::deleted($user->user_id);
             return response()->json([
                 'success' => false,
                 'message' => 'Error creating user',

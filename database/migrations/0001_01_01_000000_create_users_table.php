@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,10 +18,23 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1);
         });
 
+        // Insert default document types
+        DB::table('document_type')->insert([
+            ['name' => 'CEDULA CIUDADANIA', 'status' => 1],
+            ['name' => 'TARJETA IDENTIDAD', 'status' => 1],
+            ['name' => 'C. DE EXTRANJERIA', 'status' => 1],
+        ]);
+
         Schema::create('gender', function (Blueprint $table) {
             $table->tinyIncrements('id');
             $table->string('name', 50)->nullable();
         });
+
+        // Insert default gender values
+        DB::table('gender')->insert([
+            ['name' => 'Masculino'],
+            ['name' => 'Femenino'],
+        ]);
 
         Schema::create('users', function (Blueprint $table) {
             $table->increments('user_id');
