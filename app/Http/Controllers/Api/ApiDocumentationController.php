@@ -22,6 +22,10 @@ use App\Http\Controllers\Controller;
  *      url="http://localhost:8081",
  *      description="Servidor de desarrollo"
  * )
+ * @OA\Server(
+ *     url="http://172.16.10.21:8081",
+ *     description="Servidor producción"
+ * )
  *
  * @OA\PathItem(
  *      path="/api/v1"
