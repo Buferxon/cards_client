@@ -77,7 +77,7 @@ class CardController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Tarjeta obtenida exitosamente"),
-     *             @OA\Property(property="card_number", type="string", example="19-6-05213930-4"),
+     *             @OA\Property(property="card_number", type="string", example="19-06-05213930-4"),
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
@@ -120,29 +120,29 @@ class CardController extends Controller
      * )
      */
 
-//     {
-//   "success": true,
-//   "message": "Tarjeta obtenida exitosamente",
-//   "card_number": "19-6-05213930-4",
-//   "data": [
-//     {
-//       "iss_id": "19",
-//       "cd_id": "6",
-//       "crd_snr": "5213930",
-//       "cty_id": "1",
-//       "dc_code": null,
-//       "crd_chkdg": "4",
-//       "crd_intsnr": "538327456",
-//       "crd_certificate": "0",
-//       "crd_status": "A",
-//       "crd_regdate": "2024-08-23 09:18:07",
-//       "crd_reguser": "PROCEDURE",
-//       "crd_secondcopytax": "0",
-//       "user_name": "ROBINSON BUENAVENTURA FERNANDEZ",
-//       "user_document": "1006155540"
-//     }
-//   ]
-// }
+    //     {
+    //   "success": true,
+    //   "message": "Tarjeta obtenida exitosamente",
+    //   "card_number": "19-6-05213930-4",
+    //   "data": [
+    //     {
+    //       "iss_id": "19",
+    //       "cd_id": "6",
+    //       "crd_snr": "5213930",
+    //       "cty_id": "1",
+    //       "dc_code": null,
+    //       "crd_chkdg": "4",
+    //       "crd_intsnr": "538327456",
+    //       "crd_certificate": "0",
+    //       "crd_status": "A",
+    //       "crd_regdate": "2024-08-23 09:18:07",
+    //       "crd_reguser": "PROCEDURE",
+    //       "crd_secondcopytax": "0",
+    //       "user_name": "ROBINSON BUENAVENTURA FERNANDEZ",
+    //       "user_document": "1006155540"
+    //     }
+    //   ]
+    // }
 
 
     public function getCard(GetCardRequest $request)
@@ -166,9 +166,11 @@ class CardController extends Controller
 
             // dd($card);
 
+            $cd_id_padded = str_pad($card[0]->cd_id, 2, '0', STR_PAD_LEFT);
+
             // Asegurarse de que CRD_SNR tenga 8 dígitos, rellenando con ceros a la izquierda si es necesario
             $crd_snr_padded = str_pad($card[0]->crd_snr, 8, '0', STR_PAD_LEFT);
-            $card_number = $card[0]->iss_id . '-' . $card[0]->cd_id . '-' . $crd_snr_padded . '-' . $card[0]->crd_chkdg;
+            $card_number = $card[0]->iss_id . '-' . $cd_id_padded . '-' . $crd_snr_padded . '-' . $card[0]->crd_chkdg;
             return response()->json([
                 'success' => true,
                 'message' => 'Tarjeta obtenida exitosamente',
