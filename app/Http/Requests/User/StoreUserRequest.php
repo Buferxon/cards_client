@@ -28,7 +28,7 @@ class StoreUserRequest extends FormRequest
             'address' => 'nullable|string|max:255',
             'password' => 'nullable|string|min:8|confirmed',
             'password_confirmation' => 'required_with:password|string|min:8',
-            'crd_intsnr' => ['required', new CheckCardExistence()], // Usando la regla personalizada
+            'crd_intsnr' => ['required', new CheckCardExistence(1)], // Usando la regla personalizada
         ];
     }
 

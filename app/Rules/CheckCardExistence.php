@@ -10,6 +10,16 @@ use App\Models\Card;
 
 class CheckCardExistence implements ValidationRule
 {
+    protected $tipo;
+
+    public function __construct($tipo)
+    {
+        $this->tipo = $tipo;
+    }
+
+
+
+
     /**
      * Run the validation rule.
      *
@@ -17,6 +27,8 @@ class CheckCardExistence implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
+
+
         // $value contendrá el valor de 'CRD_INTSNR' que se está validando.
 
         $reg_card = CardHelper::getCardByIntSnr($value);
@@ -30,8 +42,13 @@ class CheckCardExistence implements ValidationRule
             ->where('CRD_SNR', $reg_card[0]->crd_snr)
             ->first();
 
-        if (!empty($card)) {
-            $fail('La tarjeta con el serial interno proporcionado ya se encuentra registrada.');
+        if (!empty($card) and $this->tipo == 1) {
+
+            if (strpos($value, '-') !== false) {
+                $fail('El número de tarjeta proporcionado ya se encuentra registrado.');
+            } else {
+                $fail('La tarjeta con el serial interno proporcionado ya se encuentra registrada.');
+            }
         }
     }
 }

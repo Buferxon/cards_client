@@ -23,7 +23,7 @@ class GetCardRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'crd_intsnr' => ['required', new CheckCardExistence()],
+            'crd_intsnr' => ['required', new CheckCardExistence(2)],
             //
         ];
     }
