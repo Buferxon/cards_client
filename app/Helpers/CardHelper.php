@@ -45,7 +45,7 @@ class CardHelper
          left join MERCURY.USERDOCUMENTS ud
                 on u.USR_ID = ud.USR_ID
                and ud.USRDOC_STATUS='A' and (ud.DT_ID in (87, 88, 83) or ud.DT_ID is null)
-             where c.CRD_INTSNR = :CRD_INTSNR
+             where c.CRD_INTSNR = :CRD_INTSNR and rownum <= 1
                
         ", [
             'CRD_INTSNR' => $crd_intsnr

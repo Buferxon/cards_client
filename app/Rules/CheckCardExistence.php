@@ -25,9 +25,9 @@ class CheckCardExistence implements ValidationRule
             $fail('La tarjeta con el serial interno proporcionado no existe o no cumple con los criterios.');
         }
 
-        $card = Card::where('ISS_ID', $reg_card->iss_id ?? null)
-            ->where('CD_ID', $reg_card->cd_id ?? null)
-            ->where('CRD_SNR', $reg_card->crd_snr ?? null)
+        $card = Card::where('ISS_ID', $reg_card[0]->iss_id)
+            ->where('CD_ID', $reg_card[0]->cd_id)
+            ->where('CRD_SNR', $reg_card[0]->crd_snr)
             ->first();
 
         if (!empty($card)) {
