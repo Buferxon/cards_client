@@ -20,7 +20,18 @@ class StoreUserRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'gender_id' => 'required|integer|exists:gender,id',
             'document_type_id' => 'required|integer|exists:document_type,id',
-            'document_number' => 'required|integer|unique:users,document_number',
+            'document_number' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $documentType = $this->input('document_type_id');
+                    if ($documentType == 3 && !is_string($value)) {
+                        $fail('El número de documento debe ser una cadena de texto para el tipo de documento seleccionado.');
+                    } elseif ($documentType != 3 && !ctype_digit(strval($value))) {
+                        $fail('El número de documento debe ser numérico para el tipo de documento seleccionado.');
+                    }
+                },
+                'unique:users,document_number'
+            ],
             'email' => 'required|string|email|max:255|unique:users,email',
             'telephone' => 'required|integer',
             'birth_date' => 'nullable|date',
@@ -51,9 +62,18 @@ class StoreUserRequest extends FormRequest
             'document_type_id.integer' => 'El tipo de documento debe ser un valor numérico',
             'document_type_id.exists' => 'El tipo de documento seleccionado no es válido',
 
-            'document_number.required' => 'El número de documento es requerido',
-            'document_number.string' => 'El número de documento debe ser numérico',
-            'document_number.unique' => 'Este número de documento ya está registrado',
+            'document_number' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $documentType = $this->input('document_type_id');
+                    if ($documentType == 3 && !is_string($value)) {
+                        $fail('El número de documento debe ser una cadena de texto para el tipo de documento seleccionado.');
+                    } elseif ($documentType != 3 && !ctype_digit(strval($value))) {
+                        $fail('El número de documento debe ser numérico para el tipo de documento seleccionado.');
+                    }
+                },
+                'unique:users,document_number'
+            ],
 
             'email.required' => 'El correo electrónico es requerido',
             'email.string' => 'El correo electrónico debe ser una cadena de texto',

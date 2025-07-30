@@ -16,6 +16,10 @@
         {
             "url": "http://localhost:8081",
             "description": "Servidor de desarrollo"
+        },
+        {
+            "url": "http://172.16.10.21:8081",
+            "description": "Servidor producción"
         }
     ],
     "paths": {
@@ -56,7 +60,7 @@
                                         },
                                         "card_number": {
                                             "type": "string",
-                                            "example": "19-6-05213930-4"
+                                            "example": "19-06-05213930-4"
                                         },
                                         "data": {
                                             "type": "array",
@@ -334,8 +338,8 @@
                                         "example": 2
                                     },
                                     "document_number": {
-                                        "type": "integer",
-                                        "example": 12345678
+                                        "type": "string",
+                                        "example": "12345678"
                                     },
                                     "email": {
                                         "type": "string",

@@ -118,7 +118,7 @@ class UserController extends Controller
      *              @OA\Property(property="last_name", type="string", example="Pérez"),
      *              @OA\Property(property="gender_id", type="integer", example=1),
      *              @OA\Property(property="document_type_id", type="integer", example=2),
-     *              @OA\Property(property="document_number", type="integer", example=12345678),
+     *              @OA\Property(property="document_number", type="string", example="12345678"),
      *              @OA\Property(property="email", type="string", format="email", example="juan@ejemplo.com"),
      *              @OA\Property(property="telephone", type="integer", example=3001234567),
      *              @OA\Property(property="address", type="string", example="Calle 123 #45-67"),
