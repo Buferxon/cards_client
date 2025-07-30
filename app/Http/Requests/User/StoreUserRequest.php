@@ -52,7 +52,7 @@ class StoreUserRequest extends FormRequest
             'document_type_id.exists' => 'El tipo de documento seleccionado no es válido',
 
             'document_number.required' => 'El número de documento es requerido',
-            'document_number.integer' => 'El número de documento debe ser numérico',
+            'document_number.string' => 'El número de documento debe ser numérico',
             'document_number.unique' => 'Este número de documento ya está registrado',
 
             'email.required' => 'El correo electrónico es requerido',

@@ -42,7 +42,7 @@ return new class extends Migration
             $table->string('last_name', 50);
             $table->tinyInteger('gender_id')->unsigned();
             $table->integer('document_type_id')->unsigned();
-            $table->unsignedBigInteger('document_number');
+            $table->string('document_number');
             $table->string('email', 100)->unique();
             $table->unsignedBigInteger('telephone');
             $table->timestamp('email_verified_at')->nullable();
