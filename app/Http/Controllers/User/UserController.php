@@ -168,6 +168,8 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         try {
+
+
             $data = $request->validated();
             $serialHex = $data['crd_intsnr'];
 
@@ -220,7 +222,6 @@ class UserController extends Controller
                 'data' => $user
             ], 201);
         } catch (\Exception $e) {
-            dd($e);
             User::deleted($user->user_id);
             return response()->json([
                 'success' => false,
