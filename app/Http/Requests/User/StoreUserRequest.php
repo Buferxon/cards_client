@@ -30,7 +30,7 @@ class StoreUserRequest extends FormRequest
                         $fail('El número de documento debe ser numérico para el tipo de documento seleccionado.');
                     }
                 },
-                'unique:users,document_number'
+                'unique:users,document_number,NULL,id,document_number,' . strval($this->input('document_number'))
             ],
             'email' => 'required|string|email|max:255|unique:users,email',
             'telephone' => 'required|integer',
