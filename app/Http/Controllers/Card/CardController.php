@@ -185,4 +185,156 @@ class CardController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/cards/multiple",
+     *     summary="Obtener información de múltiples tarjetas por sus números de serie internos",
+     *     description="Retorna la información de múltiples tarjetas específicas utilizando un array de números de serie internos (crd_intsnr).",
+     *     operationId="getMoreCards",
+     *     tags={"Cards"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Array de números de serie internos de las tarjetas",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="CARDS",
+     *                 type="array",
+     *                 description="Array de números de serie internos",
+     *                 @OA\Items(
+     *                     type="integer",
+     *                     example=536072571
+     *                 ),
+     *                 example={536072571, 4153070352, 354664283, 535255771}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Tarjetas obtenidas exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Tarjetas obtenidas exitosamente"),
+     *             @OA\Property(property="total_found", type="integer", example=3),
+     *             @OA\Property(property="total_requested", type="integer", example=4),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="card_number", type="string", example="19-06-05213930-4"),
+     *                     @OA\Property(property="iss_id", type="string", example="19"),
+     *                     @OA\Property(property="cd_id", type="string", example="6"),
+     *                     @OA\Property(property="crd_snr", type="string", example="5213930"),
+     *                     @OA\Property(property="cty_id", type="string", example="1"),
+     *                     @OA\Property(property="dc_code", type="string", nullable=true, example=null),
+     *                     @OA\Property(property="crd_chkdg", type="string", example="4"),
+     *                     @OA\Property(property="crd_intsnr", type="string", example="538327456"),
+     *                     @OA\Property(property="crd_certificate", type="string", example="0"),
+     *                     @OA\Property(property="crd_status", type="string", example="A"),
+     *                     @OA\Property(property="crd_regdate", type="string", format="date-time", example="2024-08-23 09:18:07"),
+     *                     @OA\Property(property="crd_reguser", type="string", example="PROCEDURE"),
+     *                     @OA\Property(property="crd_secondcopytax", type="string", example="0"),
+     *                     @OA\Property(property="user_name", type="string", example="ROBINSON BUENAVENTURA FERNANDEZ"),
+     *                     @OA\Property(property="user_document", type="string", example="1006155540")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Datos de entrada inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="El parámetro CARDS es requerido y debe ser un array")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No se encontraron tarjetas con los números de serie proporcionados",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="No se encontraron tarjetas con los números de serie proporcionados")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al obtener las tarjetas",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Error al obtener las tarjetas"),
+     *             @OA\Property(property="error", type="string", example="Mensaje de error")
+     *         )
+     *     )
+     * )
+     */
+    public function getMoreCards(Request $request)
+    {
+        try {
+            $cards_data = $request->input('CARDS');
+
+            if (!$cards_data || !is_array($cards_data)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El parámetro CARDS es requerido y debe ser un array'
+                ], 400);
+            }
+
+            if (empty($cards_data)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El array CARDS no puede estar vacío'
+                ], 400);
+            }
+
+            // Obtener todas las tarjetas usando el helper
+            $cards = CardHelper::getMultipleCardsByIntSnr($cards_data);
+
+            if (!$cards || empty($cards)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontraron tarjetas con los números de serie proporcionados'
+                ], 404);
+            }
+
+            // Procesar cada tarjeta para agregar el card_number formateado
+            $processed_cards = [];
+            foreach ($cards as $card) {
+                $cd_id_padded = str_pad($card->cd_id, 2, '0', STR_PAD_LEFT);
+                $crd_snr_padded = str_pad($card->crd_snr, 8, '0', STR_PAD_LEFT);
+                $card_number = $card->iss_id . '-' . $cd_id_padded . '-' . $crd_snr_padded . '-' . $card->crd_chkdg;
+
+                $processed_cards[] = [
+                    'card_number' => $card_number,
+                    'iss_id' => $card->iss_id,
+                    'cd_id' => $card->cd_id,
+                    'crd_snr' => $card->crd_snr,
+                    'cty_id' => $card->cty_id,
+                    'dc_code' => $card->dc_code,
+                    'crd_chkdg' => $card->crd_chkdg,
+                    'crd_intsnr' => $card->crd_intsnr,
+                    'crd_certificate' => $card->crd_certificate,
+                    'crd_status' => $card->crd_status,
+                    'crd_regdate' => $card->crd_regdate,
+                    'crd_reguser' => $card->crd_reguser,
+                    'crd_secondcopytax' => $card->crd_secondcopytax,
+                    'user_name' => $card->user_name,
+                    'user_document' => $card->user_document
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tarjetas obtenidas exitosamente',
+                'total_found' => count($processed_cards),
+                'total_requested' => count($cards_data),
+                'data' => $processed_cards
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener las tarjetas',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

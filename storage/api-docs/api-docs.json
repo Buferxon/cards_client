@@ -181,6 +181,207 @@
                 }
             }
         },
+        "/api/v1/cards/multiple": {
+            "post": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Obtener información de múltiples tarjetas por sus números de serie internos",
+                "description": "Retorna la información de múltiples tarjetas específicas utilizando un array de números de serie internos (crd_intsnr).",
+                "operationId": "getMoreCards",
+                "requestBody": {
+                    "description": "Array de números de serie internos de las tarjetas",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "CARDS": {
+                                        "description": "Array de números de serie internos",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 536072571
+                                        },
+                                        "example": [
+                                            536072571,
+                                            4153070352,
+                                            354664283,
+                                            535255771
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tarjetas obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tarjetas obtenidas exitosamente"
+                                        },
+                                        "total_found": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "total_requested": {
+                                            "type": "integer",
+                                            "example": 4
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "card_number": {
+                                                        "type": "string",
+                                                        "example": "19-06-05213930-4"
+                                                    },
+                                                    "iss_id": {
+                                                        "type": "string",
+                                                        "example": "19"
+                                                    },
+                                                    "cd_id": {
+                                                        "type": "string",
+                                                        "example": "6"
+                                                    },
+                                                    "crd_snr": {
+                                                        "type": "string",
+                                                        "example": "5213930"
+                                                    },
+                                                    "cty_id": {
+                                                        "type": "string",
+                                                        "example": "1"
+                                                    },
+                                                    "dc_code": {
+                                                        "type": "string",
+                                                        "example": null,
+                                                        "nullable": true
+                                                    },
+                                                    "crd_chkdg": {
+                                                        "type": "string",
+                                                        "example": "4"
+                                                    },
+                                                    "crd_intsnr": {
+                                                        "type": "string",
+                                                        "example": "538327456"
+                                                    },
+                                                    "crd_certificate": {
+                                                        "type": "string",
+                                                        "example": "0"
+                                                    },
+                                                    "crd_status": {
+                                                        "type": "string",
+                                                        "example": "A"
+                                                    },
+                                                    "crd_regdate": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2024-08-23 09:18:07"
+                                                    },
+                                                    "crd_reguser": {
+                                                        "type": "string",
+                                                        "example": "PROCEDURE"
+                                                    },
+                                                    "crd_secondcopytax": {
+                                                        "type": "string",
+                                                        "example": "0"
+                                                    },
+                                                    "user_name": {
+                                                        "type": "string",
+                                                        "example": "ROBINSON BUENAVENTURA FERNANDEZ"
+                                                    },
+                                                    "user_document": {
+                                                        "type": "string",
+                                                        "example": "1006155540"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Datos de entrada inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El parámetro CARDS es requerido y debe ser un array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No se encontraron tarjetas con los números de serie proporcionados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se encontraron tarjetas con los números de serie proporcionados"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al obtener las tarjetas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al obtener las tarjetas"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensaje de error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [

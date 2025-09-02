@@ -29,4 +29,8 @@ Route::prefix('v1')->group(function () {
     //Consulta numero de tarjeta
     Route::get('cards/{crd_intsnr}', [CardController::class, 'getCard'])
         ->name('cards.get_number');
+
+    //Consulta múltiples tarjetas
+    Route::post('cards/multiple', [CardController::class, 'getMoreCards'])
+        ->name('cards.get_multiple');
 });
