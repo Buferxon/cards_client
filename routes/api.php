@@ -33,4 +33,12 @@ Route::prefix('v1')->group(function () {
     //Consulta múltiples tarjetas
     Route::post('cards/multiple', [CardController::class, 'getMoreCards'])
         ->name('cards.get_multiple');
+
+    // Verificar si un número de tarjeta está registrado
+    Route::get('cards/exists/{crd_intsnr}', [CardController::class, 'checkCardRegistered'])
+        ->name('cards.exists');
+
+    // Obtener usuario por número de documento
+    Route::get('users/document/{document_number}', [CardController::class, 'getUserByDocument'])
+        ->name('users.get_by_document');
 });

@@ -24,6 +24,189 @@
     ],
     "paths": {
         "/api/v1": {},
+        "/api/v1/users/document/{document_number}": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Obtener usuario por número de documento",
+                "description": "Retorna el usuario completo con sus relaciones gender, documentType y cards.",
+                "operationId": "getUserByDocument",
+                "parameters": [
+                    {
+                        "name": "document_number",
+                        "in": "path",
+                        "description": "Número de documento del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Usuario encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario encontrado"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "ROBINSON"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "BUENAVENTURA FERNANDEZ"
+                                                },
+                                                "document_number": {
+                                                    "type": "string",
+                                                    "example": "1006155540"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "robinson@example.com"
+                                                },
+                                                "telephone": {
+                                                    "type": "integer",
+                                                    "example": 3001234567
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "Calle 123 #45-67"
+                                                },
+                                                "birth_date": {
+                                                    "type": "string",
+                                                    "example": "1990-01-01"
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "gender": {
+                                                    "type": "object"
+                                                },
+                                                "documentType": {
+                                                    "type": "object"
+                                                },
+                                                "cards": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Usuario no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Usuario no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cards/exists/{crd_intsnr}": {
+            "get": {
+                "tags": [
+                    "Cards"
+                ],
+                "summary": "Verificar si un número de tarjeta está registrado",
+                "description": "Retorna si una tarjeta con el número de serie interno existe en la base de datos.",
+                "operationId": "checkCardRegistered",
+                "parameters": [
+                    {
+                        "name": "crd_intsnr",
+                        "in": "path",
+                        "description": "Número de serie interno de la tarjeta (puede ser hex o formato 'iss-cd-crd-chkdg')",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Resultado de la verificación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "registered": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error al verificar",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error al verificar"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Mensaje de error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/cards/{crd_intsnr}": {
             "get": {
                 "tags": [

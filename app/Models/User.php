@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Gender;
 use App\Models\DocumentType;
+use App\Models\Card;
 
 class User extends Authenticatable
 {
@@ -96,5 +97,13 @@ class User extends Authenticatable
     public function documentType()
     {
         return $this->belongsTo(DocumentType::class, 'document_type_id');
+    }
+
+    /**
+     * Get the cards associated with the user.
+     */
+    public function cards()
+    {
+        return $this->hasMany(Card::class, 'user_id', 'user_id');
     }
 }

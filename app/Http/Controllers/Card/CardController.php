@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Card;
 use App\Helpers\CardHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Card\GetCardRequest;
+use App\Models\User;
 use App\Models\Card;
 use Illuminate\Http\Request;
 
@@ -49,6 +50,151 @@ class CardController extends Controller
                 'error' => 'Error al almacenar la tarjeta',
                 'message' => $e->getMessage()
             ];
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/users/document/{document_number}",
+     *     summary="Obtener usuario por número de documento",
+     *     description="Retorna el usuario completo con sus relaciones gender, documentType y cards.",
+     *     operationId="getUserByDocument",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="document_number",
+     *         in="path",
+     *         description="Número de documento del usuario",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Usuario encontrado"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="user_id", type="integer", example=123),
+     *                 @OA\Property(property="name", type="string", example="ROBINSON"),
+     *                 @OA\Property(property="last_name", type="string", example="BUENAVENTURA FERNANDEZ"),
+     *                 @OA\Property(property="document_number", type="string", example="1006155540"),
+     *                 @OA\Property(property="email", type="string", example="robinson@example.com"),
+     *                 @OA\Property(property="telephone", type="integer", example=3001234567),
+     *                 @OA\Property(property="address", type="string", example="Calle 123 #45-67"),
+     *                 @OA\Property(property="birth_date", type="string", example="1990-01-01"),
+     *                 @OA\Property(property="status", type="boolean", example=true),
+     *                 @OA\Property(property="gender", type="object"),
+     *                 @OA\Property(property="documentType", type="object"),
+     *                 @OA\Property(
+     *                     property="cards",
+     *                     type="array",
+     *                     @OA\Items(type="object")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
+     *     )
+     * )
+     */
+    public function getUserByDocument($document_number)
+    {
+        try {
+            $user = User::with([
+                'gender',
+                'documentType',
+                'cards'
+            ])->where('document_number', $document_number)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado'
+                ], 404);
+            }
+
+            $user->setRelation(
+                'cards',
+                $user->cards->map(function ($card) {
+                    $cd_id_padded = str_pad($card->CD_ID, 2, '0', STR_PAD_LEFT);
+                    $crd_snr_padded = str_pad($card->CRD_SNR, 8, '0', STR_PAD_LEFT);
+
+                    return array_merge($card->toArray(), [
+                        'card_number' => $card->ISS_ID . '-' . $cd_id_padded . '-' . $crd_snr_padded . '-' . $card->CRD_CHKDG,
+                    ]);
+                })
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario encontrado',
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener el usuario',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/cards/exists/{crd_intsnr}",
+     *     summary="Verificar si un número de tarjeta está registrado",
+     *     description="Retorna si una tarjeta con el número de serie interno existe en la base de datos.",
+     *     operationId="checkCardRegistered",
+     *     tags={"Cards"},
+     *     @OA\Parameter(
+     *         name="crd_intsnr",
+     *         in="path",
+     *         description="Número de serie interno de la tarjeta (puede ser hex o formato 'iss-cd-crd-chkdg')",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Resultado de la verificación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="registered", type="boolean", example=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error al verificar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Error al verificar"),
+     *             @OA\Property(property="error", type="string", example="Mensaje de error")
+     *         )
+     *     )
+     * )
+     */
+    public function checkCardRegistered($crd_intsnr)
+    {
+        try {
+            $registered = CardHelper::isCardRegistered($crd_intsnr);
+
+            return response()->json([
+                'success' => true,
+                'registered' => (bool) $registered
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al verificar',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

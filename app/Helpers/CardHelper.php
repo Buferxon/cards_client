@@ -137,4 +137,32 @@ class CardHelper
              where c.CRD_INTSNR IN ({$placeholders})
         ", $crd_intsnr_array);
   }
+
+  public static function getUserByDocument($documentNumber)
+  {
+    if (empty($documentNumber)) {
+      return [];
+    }
+
+    return DB::connection('oracle_mercury')->select("
+            select u.USR_ID,
+                   u.USR_NAME,
+                   u.USR_STATUS,
+                   ud.USRDOC_NUMBER as document_number,
+                   ud.DT_ID as document_type
+              from MERCURY.USERS u
+         left join MERCURY.USERDOCUMENTS ud
+                on u.USR_ID = ud.USR_ID
+               and ud.USRDOC_STATUS='A'
+             where ud.USRDOC_NUMBER = :DOC_NUMBER and rownum <= 1
+        ", [
+      'DOC_NUMBER' => $documentNumber
+    ]);
+  }
+
+  public static function isCardRegistered($crd_intsnr)
+  {
+    $card = self::getCardByIntSnr($crd_intsnr);
+    return !empty($card);
+  }
 }
