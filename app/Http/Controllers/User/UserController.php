@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Helpers\CardHelper;
 
 class UserController extends Controller
@@ -189,6 +190,19 @@ class UserController extends Controller
 
             $reg_card = CardHelper::getCardByIntSnr($serialHex);
 
+            if (empty($reg_card)) {
+                Log::warning('Card lookup returned no results during user creation', [
+                    'input' => $request->except(['password', 'password_confirmation']),
+                    'crd_intsnr' => $serialHex,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontró una tarjeta válida para el serial interno proporcionado.',
+                    'error' => 'Card lookup returned no results',
+                ], 422);
+            }
+
 
             $is_personalized = 0; // Card is personalized
 
@@ -230,7 +244,6 @@ class UserController extends Controller
             ], 500);
         }
     }
-
     /**
      * @OA\Get(
      *      path="/api/v1/users/{id}",

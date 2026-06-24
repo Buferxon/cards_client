@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Card;
 
+use App\Http\Requests\ApiFormRequest;
 use App\Rules\CheckCardExistence;
-use Illuminate\Foundation\Http\FormRequest;
 
-class GetCardRequest extends FormRequest
+class GetCardRequest extends ApiFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\User;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
+use App\Http\Requests\ApiFormRequest;
 use App\Rules\CheckCardExistence; // Importa tu regla
-class StoreUserRequest extends FormRequest
+class StoreUserRequest extends ApiFormRequest
 {
     public function authorize(): bool
     {
@@ -94,16 +92,5 @@ class StoreUserRequest extends FormRequest
             'password_confirmation.string' => 'La confirmación de la contraseña debe ser una cadena de texto',
             'password_confirmation.min' => 'La confirmación de la contraseña debe tener al menos 8 caracteres',
         ];
-    }
-
-    protected function failedValidation(Validator $validator): void
-    {
-        throw new HttpResponseException(
-            response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422)
-        );
     }
 }

@@ -4,9 +4,9 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Support\Facades\DB;
 use App\Helpers\CardHelper;
 use App\Models\Card;
+use Illuminate\Support\Facades\Log;
 
 class CheckCardExistence implements ValidationRule
 {
@@ -34,11 +34,14 @@ class CheckCardExistence implements ValidationRule
 
             if (empty($reg_card)) {
                 $fail('La tarjeta con el serial interno proporcionado no existe o no cumple con los criterios.');
+                return;
             }
 
-            $card = Card::where('ISS_ID', $reg_card[0]->iss_id)
-                ->where('CD_ID', $reg_card[0]->cd_id)
-                ->where('CRD_SNR', $reg_card[0]->crd_snr)
+            $cardData = $reg_card[0];
+
+            $card = Card::where('ISS_ID', $cardData->iss_id)
+                ->where('CD_ID', $cardData->cd_id)
+                ->where('CRD_SNR', $cardData->crd_snr)
                 ->first();
 
             if (!empty($card) and $this->tipo == 1) {
@@ -50,6 +53,12 @@ class CheckCardExistence implements ValidationRule
                 }
             }
         } catch (\Exception $e) {
+            Log::warning('Card existence validation exception', [
+                'attribute' => $attribute,
+                'value' => $value,
+                'error' => $e->getMessage(),
+            ]);
+
             $fail('Error al validar la tarjeta: ' . $e->getMessage());
         }
     }
