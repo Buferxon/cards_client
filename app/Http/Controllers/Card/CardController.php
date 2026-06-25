@@ -8,6 +8,7 @@ use App\Http\Requests\Card\GetCardRequest;
 use App\Models\User;
 use App\Models\Card;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CardController extends Controller
 {
@@ -108,6 +109,13 @@ class CardController extends Controller
     public function getUserByDocument($document_number)
     {
         try {
+            Log::info('CardController@getUserByDocument invoked', [
+                'method' => request()->method(),
+                'path' => request()->path(),
+                'route' => optional(request()->route())->getName(),
+                'document_number' => $document_number,
+            ]);
+
             $user = User::with([
                 'gender',
                 'documentType',
@@ -183,6 +191,13 @@ class CardController extends Controller
     public function checkCardRegistered($crd_intsnr)
     {
         try {
+            Log::info('CardController@checkCardRegistered invoked', [
+                'method' => request()->method(),
+                'path' => request()->path(),
+                'route' => optional(request()->route())->getName(),
+                'crd_intsnr' => $crd_intsnr,
+            ]);
+
             $registered = CardHelper::isCardRegistered($crd_intsnr);
 
             return response()->json([
@@ -295,6 +310,13 @@ class CardController extends Controller
     {
 
         try {
+            Log::info('CardController@getCard invoked', [
+                'method' => $request->method(),
+                'path' => $request->path(),
+                'route' => optional($request->route())->getName(),
+                'crd_intsnr' => $request->input('crd_intsnr'),
+            ]);
+
             $crd_intsnr = $request->input('crd_intsnr');
 
 
@@ -416,6 +438,13 @@ class CardController extends Controller
     public function getMoreCards(Request $request)
     {
         try {
+            Log::info('CardController@getMoreCards invoked', [
+                'method' => $request->method(),
+                'path' => $request->path(),
+                'route' => optional($request->route())->getName(),
+                'cards_count' => is_array($request->input('CARDS')) ? count($request->input('CARDS')) : 0,
+            ]);
+
             $cards_data = $request->input('CARDS');
 
             if (!$cards_data || !is_array($cards_data)) {

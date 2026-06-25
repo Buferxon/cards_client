@@ -81,6 +81,13 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        Log::info('UserController@index invoked', [
+            'method' => $request->method(),
+            'path' => $request->path(),
+            'route' => optional($request->route())->getName(),
+            'query' => $request->query(),
+        ]);
+
         $query = User::query();
 
         // Filtro por nombre si se proporciona
@@ -169,6 +176,12 @@ class UserController extends Controller
     public function store(StoreUserRequest $request): JsonResponse
     {
         try {
+            Log::info('UserController@store invoked', [
+                'method' => $request->method(),
+                'path' => $request->path(),
+                'route' => optional($request->route())->getName(),
+                'payload_keys' => array_keys($request->all()),
+            ]);
 
 
             $data = $request->validated();
