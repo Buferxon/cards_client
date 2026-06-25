@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function () {
     // Rutas de usuarios
     Route::apiResource('users', UserController::class);
 
-    Route::post('users/insert', [UserController::class, 'store'])->name('users.insert');
+    // Route::post('users/insert', [UserController::class, 'store'])->name('users.insert');
 
     // Rutas adicionales si las necesitas
     Route::get('users/search/{term}', [UserController::class, 'search'])->name('users.search');
