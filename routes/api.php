@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     // Rutas de usuarios
-    Route::apiResource('users', UserController::class);
+    Route::apiResource('users', UserController::class)->except(['index']);
 
     // Route::post('users/insert', [UserController::class, 'store'])->name('users.insert');
 
