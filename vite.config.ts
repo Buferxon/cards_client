@@ -15,9 +15,13 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
-        host: true, // Permite conexiones desde tu red
-        port: 5175, // Cambia aquí el puerto (por ejemplo, 5175)
-        strictPort: true, // Opcional: lanza error si el puerto está en uso
+        host: '127.0.0.1',
+        port: 5175,
+        strictPort: true,
+        hmr: {
+            host: '127.0.0.1',
+            port: 5175,
+        },
     },
     esbuild: {
         jsx: 'automatic',
